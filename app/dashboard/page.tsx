@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { quotes } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 import { Badge } from "@/components/ui/badge";
+import { FadeUp } from "@/components/ui/fade-up";
 
 export default async function DashboardPage() {
   // Fetch one random quote from the DB
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
   return (
     <>
       {/* Welcome hero */}
+      <FadeUp>
       <Card variant="glass" className="mb-8 p-8">
         <h1 className="font-playfair text-[32px] font-semibold text-rose-900">
           Good morning
@@ -28,19 +30,25 @@ export default async function DashboardPage() {
           Here&apos;s what&apos;s happening with your wellness journey today.
         </p>
       </Card>
+      </FadeUp>
 
       {/* Stat cards */}
+      <FadeUp delay={100}>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
         <StatCard label="Upcoming Sessions" value="--" icon={CalendarDays} />
         <StatCard label="Hours This Month" value="--" icon={Clock} />
         <StatCard label="Avg. Rating" value="--" icon={Star} />
       </div>
+      </FadeUp>
 
       {/* Upcoming session */}
+      <FadeUp delay={200}>
       <PageHeader title="Next Session" />
       <SessionCard className="mb-8" />
+      </FadeUp>
 
       {/* Inspiration — single random quote */}
+      <FadeUp delay={300}>
       <PageHeader title="Inspiration" />
       {quote ? (
         <Card variant="glass" className="p-8">
@@ -61,6 +69,7 @@ export default async function DashboardPage() {
           </p>
         </Card>
       )}
+      </FadeUp>
     </>
   );
 }

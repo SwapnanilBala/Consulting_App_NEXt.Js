@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { PostCard } from "@/components/dashboard/post-card";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FadeUp } from "@/components/ui/fade-up";
 
 const groups = ["All", "Mindfulness", "Nutrition", "Fitness", "Self-Care"];
 
@@ -13,9 +14,12 @@ export default function CommunityPage() {
 
   return (
     <>
+      <FadeUp>
       <PageHeader title="Community" description="Connect with fellow members" />
+      </FadeUp>
 
       {/* Horizontal group pills */}
+      <FadeUp delay={100}>
       <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-none">
         {groups.map((g) => (
           <button
@@ -32,8 +36,10 @@ export default function CommunityPage() {
           </button>
         ))}
       </div>
+      </FadeUp>
 
       {/* Post cards */}
+      <FadeUp delay={200}>
       <div className="space-y-4">
         <PostCard
           authorName="Mia Chen"
@@ -58,6 +64,7 @@ export default function CommunityPage() {
           replies={11}
         />
       </div>
+      </FadeUp>
 
       {/* FAB */}
       <button className="fixed bottom-24 md:bottom-8 right-6 bg-rose-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:bg-rose-800 transition-colors z-20">

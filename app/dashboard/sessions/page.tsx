@@ -3,15 +3,19 @@ import { PageHeader } from "@/components/layout/page-header";
 import { SessionCard } from "@/components/dashboard/session-card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { FadeUp } from "@/components/ui/fade-up";
 
 export default function SessionsPage() {
   return (
     <>
+      <FadeUp>
       <PageHeader title="My Sessions" description="Manage your upcoming and past sessions">
         <Button variant="primary">Book Session</Button>
       </PageHeader>
+      </FadeUp>
 
       {/* Upcoming sessions */}
+      <FadeUp delay={100}>
       <h2 className="font-playfair text-xl font-semibold text-rose-900 mb-4">
         Upcoming
       </h2>
@@ -31,8 +35,10 @@ export default function SessionsPage() {
           status="upcoming"
         />
       </div>
+      </FadeUp>
 
       {/* Past sessions — collapsed */}
+      <FadeUp delay={200}>
       <button className="flex items-center gap-2 text-cream-700 hover:text-rose-900 transition-colors mb-4">
         <h2 className="font-playfair text-xl font-semibold">Past Sessions</h2>
         <ChevronDown size={18} />
@@ -53,6 +59,7 @@ export default function SessionsPage() {
           status="completed"
         />
       </div>
+      </FadeUp>
     </>
   );
 }

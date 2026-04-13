@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ContentCard } from "@/components/dashboard/content-card";
+import { ContentCardSkeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 interface Quote {
@@ -66,10 +67,7 @@ export default function InspirationPage() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="glass-subtle rounded-2xl h-56 animate-pulse"
-            />
+            <ContentCardSkeleton key={i} />
           ))}
         </div>
       ) : quotes.length === 0 ? (
