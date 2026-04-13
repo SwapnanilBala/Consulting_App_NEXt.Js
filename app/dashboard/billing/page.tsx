@@ -147,7 +147,7 @@ export default function BillingPage() {
     } finally {
       setLoading(null);
     }
-  }, []);
+  }, [toast]);
 
   return (
     <>
