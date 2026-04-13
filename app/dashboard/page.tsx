@@ -3,10 +3,20 @@ import { CalendarDays, Clock, Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { SessionCard } from "@/components/dashboard/session-card";
-import { ContentCard } from "@/components/dashboard/content-card";
 import { Card } from "@/components/ui/card";
+import { db } from "@/lib/db";
+import { quotes } from "@/lib/db/schema";
+import { sql } from "drizzle-orm";
+import { Badge } from "@/components/ui/badge";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  // Fetch one random quote from the DB
+  const [quote] = await db
+    .select()
+    .from(quotes)
+    .orderBy(sql`RANDOM()`)
+    .limit(1);
+
   return (
     <>
       {/* Welcome hero */}
@@ -30,20 +40,27 @@ export default function DashboardPage() {
       <PageHeader title="Next Session" />
       <SessionCard className="mb-8" />
 
-      {/* Inspiration grid */}
+      {/* Inspiration — single random quote */}
       <PageHeader title="Inspiration" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <ContentCard
-          title="Morning Mindfulness"
-          excerpt="Start your day with intention and clarity."
-          category="Wellness"
-        />
-        <ContentCard
-          title="Building Resilience"
-          excerpt="Strategies for navigating change with grace."
-          category="Growth"
-        />
-      </div>
+      {quote ? (
+        <Card variant="glass" className="p-8">
+          <div className="flex flex-col items-center text-center gap-4">
+            <Badge variant="muted">{quote.category}</Badge>
+            <blockquote className="font-playfair text-xl md:text-2xl font-semibold text-rose-900 italic leading-relaxed max-w-2xl">
+              &ldquo;{quote.content}&rdquo;
+            </blockquote>
+            <p className="font-dmsans text-cream-700 text-sm">
+              — {quote.author}
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <Card variant="glass" className="p-8">
+          <p className="text-center text-cream-700 font-dmsans">
+            No quotes yet. Check back soon!
+          </p>
+        </Card>
+      )}
     </>
   );
 }

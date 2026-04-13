@@ -19,4 +19,10 @@ export const env = {
   get ABLY_API_KEY() {
     return required("ABLY_API_KEY");
   },
+  get RAZORPAY_KEY_ID() {
+    return required("RAZORPAY_KEY_ID");
+  },
+  get RAZORPAY_KEY_SECRET() {
+    return required("RAZORPAY_KEY_SECRET");
+  },
 } as const;

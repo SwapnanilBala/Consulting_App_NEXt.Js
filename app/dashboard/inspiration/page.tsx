@@ -1,20 +1,47 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ContentCard } from "@/components/dashboard/content-card";
 import { cn } from "@/lib/utils";
 
+interface Quote {
+  id: string;
+  content: string;
+  author: string;
+  category: string;
+  imageUrl: string | null;
+}
+
 const categories = ["All", "Wellness", "Growth", "Nutrition", "Movement", "Rest"];
 
 export default function InspirationPage() {
-  const [activeCategory, setActiveCategory] = React.useState("All");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchQuotes() {
+      setLoading(true);
+      const params = new URLSearchParams({ random: "true", limit: "20" });
+      if (activeCategory !== "All") {
+        params.set("category", activeCategory);
+      }
+      const res = await fetch(`/api/quotes?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setQuotes(data.quotes);
+      }
+      setLoading(false);
+    }
+    fetchQuotes();
+  }, [activeCategory]);
 
   return (
     <>
       <PageHeader
         title="Inspiration"
-        description="Curated content for your wellness journey"
+        description="Curated wisdom for your wellness journey"
       />
 
       {/* Category pills filter */}
@@ -35,29 +62,33 @@ export default function InspirationPage() {
         ))}
       </div>
 
-      {/* 2-up content card grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <ContentCard
-          title="Morning Mindfulness"
-          excerpt="Start your day with intention and clarity through guided practices."
-          category="Wellness"
-        />
-        <ContentCard
-          title="Building Resilience"
-          excerpt="Strategies for navigating change with grace and inner strength."
-          category="Growth"
-        />
-        <ContentCard
-          title="Nourishing from Within"
-          excerpt="How mindful eating can transform your relationship with food."
-          category="Nutrition"
-        />
-        <ContentCard
-          title="The Art of Rest"
-          excerpt="Why rest isn't laziness — and how to reclaim restorative downtime."
-          category="Rest"
-        />
-      </div>
+      {/* Content grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="glass-subtle rounded-2xl h-56 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : quotes.length === 0 ? (
+        <p className="text-center text-cream-700 font-dmsans py-12">
+          No quotes found. Check back soon!
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {quotes.map((q) => (
+            <ContentCard
+              key={q.id}
+              title={`"${q.content}"`}
+              excerpt={`— ${q.author}`}
+              category={q.category}
+              imageUrl={q.imageUrl ?? undefined}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }

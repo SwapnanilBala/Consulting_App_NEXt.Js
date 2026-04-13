@@ -37,10 +37,30 @@ export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
+  passwordHash: text("password_hash"), // null for OAuth-only users
   avatarUrl: text("avatar_url"),
+  emailVerified: timestamp("email_verified", { withTimezone: true }),
   role: text("role").notNull().default("client"), // "client" | "consultant" | "admin"
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ── OAuth Accounts (Google, etc.) ──
+
+export const accounts = pgTable("accounts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  provider: text("provider").notNull(),       // "google", "credentials"
+  providerAccountId: text("provider_account_id").notNull(),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  expiresAt: integer("expires_at"),
+  tokenType: text("token_type"),
+  scope: text("scope"),
+  idToken: text("id_token"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 // ── Conversations ──
@@ -164,9 +184,21 @@ export const paymentMethods = pgTable("payment_methods", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// ── Inspiration Quotes ──
+
+export const quotes = pgTable("quotes", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  content: text("content").notNull(),
+  author: text("author").notNull(),
+  category: text("category").notNull().default("Wellness"),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
   sentMessages: many(messages),
   clientSessions: many(sessions, { relationName: "clientSessions" }),
   consultantSessions: many(sessions, { relationName: "consultantSessions" }),
@@ -174,6 +206,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   subscriptions: many(subscriptions),
   paymentMethods: many(paymentMethods),
   conversationMemberships: many(conversationMembers),
+}));
+
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
+  }),
 }));
 
 export const conversationsRelations = relations(conversations, ({ many }) => ({
