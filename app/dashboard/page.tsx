@@ -13,11 +13,17 @@ import { FadeUp } from "@/components/ui/fade-up";
 
 export default async function DashboardPage() {
   // Fetch one random quote from the DB
-  const [quote] = await db
-    .select()
-    .from(quotes)
-    .orderBy(sql`RANDOM()`)
-    .limit(1);
+  let quote = null;
+  try {
+    const rows = await db
+      .select()
+      .from(quotes)
+      .orderBy(sql`RANDOM()`)
+      .limit(1);
+    quote = rows[0] ?? null;
+  } catch {
+    // DB query failed — show empty state
+  }
 
   return (
     <>
