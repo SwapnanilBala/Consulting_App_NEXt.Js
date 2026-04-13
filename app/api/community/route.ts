@@ -5,7 +5,7 @@ import { posts } from "@/lib/db/schema";
 import { publishToChannel } from "@/lib/realtime/ably-server";
 import { communityChannel } from "@/lib/realtime/channels";
 import { apiRateLimit } from "@/lib/redis/rate-limit";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 
 // ── GET /api/community?group=Mindfulness ──
 
@@ -86,4 +86,62 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ post: created }, { status: 201 });
+}
+
+// ── PATCH /api/community (edit post) ──
+
+const patchSchema = z.object({
+  postId: z.string().uuid(),
+  authorId: z.string().uuid(),
+  content: z.string().min(1).max(5000),
+});
+
+export async function PATCH(req: NextRequest) {
+  const body = await req.json();
+  const parsed = patchSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const { postId, authorId, content } = parsed.data;
+
+  const [updated] = await db
+    .update(posts)
+    .set({ content, updatedAt: new Date() })
+    .where(and(eq(posts.id, postId), eq(posts.authorId, authorId)))
+    .returning();
+
+  if (!updated) {
+    return NextResponse.json({ error: "Post not found or not authorized" }, { status: 404 });
+  }
+
+  return NextResponse.json({ post: updated });
+}
+
+// ── DELETE /api/community (delete post) ──
+
+const deleteSchema = z.object({
+  postId: z.string().uuid(),
+  authorId: z.string().uuid(),
+});
+
+export async function DELETE(req: NextRequest) {
+  const body = await req.json();
+  const parsed = deleteSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const { postId, authorId } = parsed.data;
+
+  const [deleted] = await db
+    .delete(posts)
+    .where(and(eq(posts.id, postId), eq(posts.authorId, authorId)))
+    .returning();
+
+  if (!deleted) {
+    return NextResponse.json({ error: "Post not found or not authorized" }, { status: 404 });
+  }
+
+  return NextResponse.json({ deleted: true });
 }

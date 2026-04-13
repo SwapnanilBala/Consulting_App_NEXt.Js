@@ -4,6 +4,7 @@ import React from "react";
 import {
   Home,
   CalendarDays,
+  Search,
   MessageCircle,
   Users,
   Sparkles,
@@ -12,10 +13,12 @@ import {
 import { NavItem } from "./nav-item";
 import { Avatar } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { NotificationBell } from "./notification-bell";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/dashboard/sessions", label: "My Sessions", icon: CalendarDays },
+  { href: "/dashboard/consultants", label: "Consultants", icon: Search },
   { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
   { href: "/dashboard/community", label: "Community", icon: Users },
   { href: "/dashboard/inspiration", label: "Inspiration", icon: Sparkles },
@@ -26,12 +29,14 @@ interface SidebarProps {
   userName?: string;
   userInitials?: string;
   userAvatar?: string;
+  userId?: string;
 }
 
 export function Sidebar({
   userName = "Welcome",
   userInitials = "U",
   userAvatar,
+  userId,
 }: SidebarProps) {
   return (
     <>
@@ -41,7 +46,10 @@ export function Sidebar({
           <span className="font-playfair text-2xl font-semibold text-rose-900 dark:text-rose-200">
             Aura
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {userId && <NotificationBell userId={userId} />}
+            <ThemeToggle />
+          </div>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">

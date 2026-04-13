@@ -5,7 +5,8 @@ import { messages, conversations, conversationMembers } from "@/lib/db/schema";
 import { publishToChannel } from "@/lib/realtime/ably-server";
 import { conversationChannel } from "@/lib/realtime/channels";
 import { messageRateLimit } from "@/lib/redis/rate-limit";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
+import { createNotification } from "@/lib/notifications/create";
 
 // ── GET /api/messages?conversationId=xxx ──
 
@@ -102,6 +103,27 @@ export async function POST(req: NextRequest) {
       createdAt: saved.createdAt,
     }
   );
+
+  // Notify other conversation members
+  const otherMembers = await db
+    .select({ userId: conversationMembers.userId })
+    .from(conversationMembers)
+    .where(
+      and(
+        eq(conversationMembers.conversationId, conversationId),
+        sql`${conversationMembers.userId} != ${senderId}`
+      )
+    );
+
+  for (const member of otherMembers) {
+    await createNotification({
+      userId: member.userId,
+      type: "new_message",
+      title: "New Message",
+      body: content.length > 80 ? content.slice(0, 80) + "\u2026" : content,
+      href: "/dashboard/messages",
+    });
+  }
 
   return NextResponse.json({ message: saved }, { status: 201 });
 }

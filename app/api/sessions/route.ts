@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { sessions } from "@/lib/db/schema";
 import { eq, desc, and } from "drizzle-orm";
+import { createNotification } from "@/lib/notifications/create";
 
 // ── GET /api/sessions?userId=xxx&status=scheduled ──
 
@@ -67,6 +68,14 @@ export async function POST(req: NextRequest) {
     })
     .returning();
 
+  await createNotification({
+    userId: consultantId,
+    type: "session_booked",
+    title: "New Session Booked",
+    body: `A client booked a session for ${new Date(startsAt).toLocaleDateString()}`,
+    href: "/dashboard/sessions",
+  });
+
   return NextResponse.json({ session: created }, { status: 201 });
 }
 
@@ -100,6 +109,17 @@ export async function PATCH(req: NextRequest) {
     .set(values)
     .where(eq(sessions.id, sessionId))
     .returning();
+
+  if (updated && updates.status === "cancelled") {
+    // Notify the consultant about the cancellation
+    await createNotification({
+      userId: updated.consultantId,
+      type: "session_cancelled",
+      title: "Session Cancelled",
+      body: `A session scheduled for ${updated.startsAt.toLocaleDateString()} has been cancelled`,
+      href: "/dashboard/sessions",
+    });
+  }
 
   if (!updated) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });

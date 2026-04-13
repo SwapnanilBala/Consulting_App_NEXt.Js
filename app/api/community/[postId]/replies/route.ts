@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { postReplies } from "@/lib/db/schema";
+import { postReplies, posts } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
+import { createNotification } from "@/lib/notifications/create";
 
 // ── GET /api/community/[postId]/replies ──
 
@@ -49,6 +50,23 @@ export async function POST(
       isAnonymous,
     })
     .returning();
+
+  // Notify the post author about the reply
+  const [post] = await db
+    .select({ authorId: posts.authorId })
+    .from(posts)
+    .where(eq(posts.id, params.postId))
+    .limit(1);
+
+  if (post && post.authorId !== authorId) {
+    await createNotification({
+      userId: post.authorId,
+      type: "community_reply",
+      title: "New Reply",
+      body: content.length > 80 ? content.slice(0, 80) + "\u2026" : content,
+      href: "/dashboard/community",
+    });
+  }
 
   return NextResponse.json({ reply: created }, { status: 201 });
 }

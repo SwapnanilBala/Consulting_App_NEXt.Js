@@ -39,6 +39,8 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   passwordHash: text("password_hash"), // null for OAuth-only users
   avatarUrl: text("avatar_url"),
+  bio: text("bio"),
+  specialty: text("specialty"),
   emailVerified: timestamp("email_verified", { withTimezone: true }),
   role: text("role").notNull().default("client"), // "client" | "consultant" | "admin"
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -195,6 +197,31 @@ export const quotes = pgTable("quotes", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// ── Notifications ──
+
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "session_booked",
+  "session_cancelled",
+  "new_message",
+  "community_reply",
+  "community_upvote",
+  "system",
+]);
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  type: notificationTypeEnum("type").notNull(),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  href: text("href"),
+  isRead: boolean("is_read").notNull().default(false),
+  metadata: text("metadata"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // ── Relations ──
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -206,6 +233,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   subscriptions: many(subscriptions),
   paymentMethods: many(paymentMethods),
   conversationMemberships: many(conversationMembers),
+  notifications: many(notifications),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -292,6 +320,13 @@ export const invoicesRelations = relations(invoices, ({ one }) => ({
 export const paymentMethodsRelations = relations(paymentMethods, ({ one }) => ({
   user: one(users, {
     fields: [paymentMethods.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
     references: [users.id],
   }),
 }));
