@@ -17,11 +17,11 @@ export function PageHeader({
   return (
     <div className={cn("flex items-start justify-between gap-4 mb-8", className)}>
       <div>
-        <h1 className="font-playfair text-3xl font-semibold text-rose-900">
+        <h1 className="font-playfair text-3xl font-semibold text-rose-900 dark:text-rose-100">
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-sm font-dmsans text-cream-700">
+          <p className="mt-1 text-sm font-dmsans text-cream-700 dark:text-cream-200">
             {description}
           </p>
         )}

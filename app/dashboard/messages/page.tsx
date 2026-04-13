@@ -4,10 +4,12 @@ import React from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Avatar } from "@/components/ui/avatar";
 import { MessageBubble } from "@/components/dashboard/message-bubble";
+import { TypingIndicator } from "@/components/dashboard/typing-indicator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FadeUp } from "@/components/ui/fade-up";
 
 interface ConversationStub {
   id: string;
@@ -26,8 +28,11 @@ const placeholderConversations: ConversationStub[] = [
 export default function MessagesPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)]">
-      <PageHeader title="Messages" description="Your conversations" />
+      <FadeUp>
+        <PageHeader title="Messages" description="Your conversations" />
+      </FadeUp>
 
+      <FadeUp delay={100}>
       <div className="flex flex-1 gap-0 rounded-2xl overflow-hidden glass min-h-0">
         {/* Conversation list */}
         <div className="hidden sm:flex flex-col w-[300px] border-r border-white/40 overflow-y-auto">
@@ -55,6 +60,7 @@ export default function MessagesPage() {
           <div className="flex-1 overflow-y-auto p-5 space-y-3">
             <MessageBubble content="Hi! Looking forward to our session." timestamp="10:00 AM" />
             <MessageBubble content="Me too! See you Thursday!" timestamp="10:05 AM" isSent />
+            <TypingIndicator />
           </div>
 
           {/* Sticky input bar */}
@@ -66,6 +72,7 @@ export default function MessagesPage() {
           </div>
         </div>
       </div>
+      </FadeUp>
     </div>
   );
 }

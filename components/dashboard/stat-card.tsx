@@ -19,8 +19,8 @@ export function StatCard({ label, value, icon: Icon, className }: StatCardProps)
         </div>
       )}
       <div>
-        <p className="text-sm font-dmsans text-cream-700">{label}</p>
-        <p className="text-2xl font-playfair font-semibold text-rose-900">
+        <p className="text-sm font-dmsans text-cream-700 dark:text-cream-200">{label}</p>
+        <p className="text-2xl font-playfair font-semibold text-rose-900 dark:text-rose-100">
           {value}
         </p>
       </div>

@@ -30,12 +30,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable}`}>
       <body
-        className="font-dmsans antialiased"
-        style={{
-          background:
-            "linear-gradient(135deg, #FDF6F4 0%, #FFF0ED 50%, #FDF6F4 100%)",
-          minHeight: "100vh",
-        }}
+        className="font-dmsans antialiased transition-colors duration-300 bg-gradient-to-br from-rose-50 via-[#FFF0ED] to-rose-50 dark:from-dark-50 dark:via-dark-100 dark:to-dark-50"
+        style={{ minHeight: "100vh" }}
       >
         <div className="blob blob-1" />
         <div className="blob blob-2" />

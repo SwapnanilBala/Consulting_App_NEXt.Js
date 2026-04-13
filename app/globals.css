@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Dark mode overrides ── */
+.dark .glass {
+  background: rgba(35, 16, 25, 0.7);
+  border-color: rgba(90, 45, 72, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dark .glass-strong {
+  background: rgba(35, 16, 25, 0.85);
+  border-color: rgba(90, 45, 72, 0.5);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.dark .glass-subtle {
+  background: rgba(35, 16, 25, 0.5);
+  border-color: rgba(90, 45, 72, 0.3);
+}
+
 /* ── Glassmorphism utilities ── */
 .glass {
   background: rgba(255, 255, 255, 0.6);
@@ -41,6 +59,7 @@
   background: rgba(212, 83, 126, 0.12);
   top: -100px;
   right: -100px;
+  animation: blob-drift-1 25s ease-in-out infinite;
 }
 
 .blob-2 {
@@ -50,6 +69,7 @@
   bottom: -80px;
   left: -80px;
   filter: blur(100px);
+  animation: blob-drift-2 30s ease-in-out infinite;
 }
 
 .blob-3 {
@@ -59,6 +79,30 @@
   top: 40%;
   left: 40%;
   filter: blur(60px);
+  animation: blob-drift-3 20s ease-in-out infinite;
+}
+
+@keyframes blob-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, 20px) scale(1.05); }
+  66% { transform: translate(-20px, 10px) scale(0.97); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25px, -15px) scale(1.03); }
+  66% { transform: translate(15px, -25px) scale(0.95); }
+}
+
+@keyframes blob-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -20px) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob-1, .blob-2, .blob-3 {
+    animation: none;
+  }
 }
 
 /* ── Scrollbar styling ── */
@@ -79,6 +123,14 @@
   background: rgba(212, 83, 126, 0.35);
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(212, 83, 126, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 83, 126, 0.5);
+}
+
 /* ── Mount animations ── */
 @keyframes fade-up {
   from {
@@ -93,4 +145,19 @@
 
 .animate-fade-up {
   animation: fade-up 0.5s ease-out both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.3s ease-out both;
 }

@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CreditCard, X, MapPin, IndianRupee } from "lucide-react";
+import { FadeUp } from "@/components/ui/fade-up";
+import { useToast } from "@/components/ui/toast";
 
 declare global {
   interface Window {
@@ -84,13 +86,14 @@ function loadRazorpayScript(): Promise<boolean> {
 export default function BillingPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleUpgrade = useCallback(async (planId: string, amountINR: number) => {
     setLoading(planId);
     try {
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        alert("Failed to load Razorpay. Please check your connection and try again.");
+        toast("Failed to load Razorpay. Please check your connection and try again.", "error");
         return;
       }
 
@@ -102,7 +105,7 @@ export default function BillingPage() {
 
       if (!res.ok) {
         const err = await res.json();
-        alert(err.error ?? "Could not create order. Try again.");
+        toast(err.error ?? "Could not create order. Try again.", "error");
         return;
       }
 
@@ -132,7 +135,7 @@ export default function BillingPage() {
             setShowUpgrade(false);
             window.location.reload();
           } else {
-            alert("Payment verification failed. Contact support.");
+            toast("Payment verification failed. Contact support.", "error");
           }
         },
       };
@@ -140,7 +143,7 @@ export default function BillingPage() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch {
-      alert("Something went wrong. Please try again.");
+      toast("Something went wrong. Please try again.", "error");
     } finally {
       setLoading(null);
     }
@@ -148,9 +151,12 @@ export default function BillingPage() {
 
   return (
     <>
-      <PageHeader title="Billing" description="Manage your plan and payments" />
+      <FadeUp>
+        <PageHeader title="Billing" description="Manage your plan and payments" />
+      </FadeUp>
 
       {/* Plan card */}
+      <FadeUp delay={100}>
       <Card variant="glass" className="glass-strong mb-6 p-8">
         <div className="flex items-start justify-between">
           <div>
@@ -178,6 +184,7 @@ export default function BillingPage() {
           <Button variant="secondary">Cancel</Button>
         </div>
       </Card>
+      </FadeUp>
 
       {/* Upgrade modal */}
       {showUpgrade && (
@@ -260,60 +267,64 @@ export default function BillingPage() {
       )}
 
       {/* Payment method */}
-      <h2 className="font-playfair text-xl font-semibold text-rose-900 mb-4">
-        Payment Method
-      </h2>
-      <Card variant="default" className="flex items-center gap-4 mb-8">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-200/60">
-          <CreditCard size={18} className="text-rose-600" />
-        </div>
-        <div className="flex-1">
-          <p className="text-sm font-dmsans font-medium text-rose-900">
-            &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ----
-          </p>
-          <p className="text-xs text-cream-700">Expires --/--</p>
-        </div>
-        <Button variant="ghost" size="sm">
-          Update
-        </Button>
-      </Card>
+      <FadeUp delay={200}>
+        <h2 className="font-playfair text-xl font-semibold text-rose-900 mb-4">
+          Payment Method
+        </h2>
+        <Card variant="default" className="flex items-center gap-4 mb-8">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-rose-200/60">
+            <CreditCard size={18} className="text-rose-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-dmsans font-medium text-rose-900">
+              &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ----
+            </p>
+            <p className="text-xs text-cream-700">Expires --/--</p>
+          </div>
+          <Button variant="ghost" size="sm">
+            Update
+          </Button>
+        </Card>
+      </FadeUp>
 
       {/* Invoice table */}
-      <h2 className="font-playfair text-xl font-semibold text-rose-900 mb-4">
-        Invoices
-      </h2>
-      <Card variant="default" className="overflow-hidden p-0">
-        <table className="w-full text-sm font-dmsans">
-          <thead>
-            <tr className="border-b border-rose-400/20">
-              <th className="text-left px-5 py-3 text-cream-700 font-medium">
-                Date
-              </th>
-              <th className="text-left px-5 py-3 text-cream-700 font-medium">
-                Description
-              </th>
-              <th className="text-left px-5 py-3 text-cream-700 font-medium">
-                Amount
-              </th>
-              <th className="text-right px-5 py-3 text-cream-700 font-medium">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {[1, 2, 3].map((i) => (
-              <tr key={i} className="border-b border-rose-400/10 last:border-0">
-                <td className="px-5 py-3 text-rose-900">--</td>
-                <td className="px-5 py-3 text-rose-900">Wellness Pro — Monthly</td>
-                <td className="px-5 py-3 text-rose-900">--</td>
-                <td className="px-5 py-3 text-right">
-                  <Badge variant="success">Paid</Badge>
-                </td>
+      <FadeUp delay={300}>
+        <h2 className="font-playfair text-xl font-semibold text-rose-900 mb-4">
+          Invoices
+        </h2>
+        <Card variant="default" className="overflow-hidden p-0">
+          <table className="w-full text-sm font-dmsans">
+            <thead>
+              <tr className="border-b border-rose-400/20">
+                <th className="text-left px-5 py-3 text-cream-700 font-medium">
+                  Date
+                </th>
+                <th className="text-left px-5 py-3 text-cream-700 font-medium">
+                  Description
+                </th>
+                <th className="text-left px-5 py-3 text-cream-700 font-medium">
+                  Amount
+                </th>
+                <th className="text-right px-5 py-3 text-cream-700 font-medium">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
+            </thead>
+            <tbody>
+              {[1, 2, 3].map((i) => (
+                <tr key={i} className="border-b border-rose-400/10 last:border-0">
+                  <td className="px-5 py-3 text-rose-900">--</td>
+                  <td className="px-5 py-3 text-rose-900">Wellness Pro — Monthly</td>
+                  <td className="px-5 py-3 text-rose-900">--</td>
+                  <td className="px-5 py-3 text-right">
+                    <Badge variant="success">Paid</Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </FadeUp>
     </>
   );
 }

@@ -1,9 +1,10 @@
 import React from "react";
-import { CalendarDays, Clock, Star } from "lucide-react";
+import { CalendarDays, Clock, Sparkles, Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { SessionCard } from "@/components/dashboard/session-card";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/lib/db";
 import { quotes } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
@@ -64,9 +65,12 @@ export default async function DashboardPage() {
         </Card>
       ) : (
         <Card variant="glass" className="p-8">
-          <p className="text-center text-cream-700 font-dmsans">
-            No quotes yet. Check back soon!
-          </p>
+          <EmptyState
+            icon={<Sparkles size={28} className="text-rose-600" />}
+            title="No quotes yet"
+            description="Inspirational quotes will appear here once added."
+            className="py-8"
+          />
         </Card>
       )}
       </FadeUp>

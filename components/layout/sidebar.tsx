@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { NavItem } from "./nav-item";
 import { Avatar } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
@@ -36,8 +37,11 @@ export function Sidebar({
     <>
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-60 h-screen fixed left-0 top-0 glass p-5 z-30">
-        <div className="font-playfair text-2xl font-semibold text-rose-900 px-3 pb-6">
-          Aura
+        <div className="flex items-center justify-between px-3 pb-6">
+          <span className="font-playfair text-2xl font-semibold text-rose-900 dark:text-rose-200">
+            Aura
+          </span>
+          <ThemeToggle />
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
